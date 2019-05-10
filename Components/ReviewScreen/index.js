@@ -1,74 +1,192 @@
+// todos에 대한 실질적인 뷰를 만드는 js 
+// ToDo 컴포넌트들을 mapping 한다.
+// 구현 목표. Recipe의 todo정보를 받아와 mapping    clear
 import React, { Component } from "react";
-import { StyleSheet, View } from "react-native";
+import { 
+  StyleSheet, 
+  View, 
+  Image, 
+  ScrollView, 
+  Dimensions, 
+  Platform, 
+  StatusBar, 
+  TouchableOpacity,
+  Text 
+} from "react-native";
 
-import ViewCard from "./ViewCard";
-import { MockReviews } from "./../../Datas/Mocks";
-import { mkReviewSummary } from "./ReviewSummary";
-import colors from "./../../Styles/colors";
+import { connect } from "react-redux";
+import ToDoModel from "../../Datas/ToDo";
+import ToDo from './RenderToDo';
+import colors from "../../Styles/colors";
+import { stopReview } from '../../Actions/creators';
+
+import Button from "./../Button";
+import NormalText from "./../NormalText";
+
+import { AntDesign } from '@expo/vector-icons';
+
+
+const { height, width } = Dimensions.get('window')
 
 class ReviewScreen extends Component {
   static displayName = "ReviewScreen";
 
-  static navigationOptions = { title: "Review" };
+  static navigationOptions = { 
+    headerLeft: <Image 
+    source={require('../../Styles/image/dish.png')} 
+    style={{width: 40, height: 40}}
+    />,
+    headerLeftContainerStyle: {paddingLeft: 20},
+    headerRight: <View></View>,
+    headerRightContainerStyle: {paddingRight: 20},
+    title: "My Recipe",
+    headerTitleContainerStyle: { justifyContent: 'center', textAlign: 'center'},
+    headerStyle: { backgroundColor: "#FFFFFF" }
+  };
 
   constructor(props) {
     super(props);
-    this.state = {
-      numReviewed: 0,
-      numCorrect: 0,
-      currentReview: 0,
-      reviews: MockReviews
+
+    this.state = { 
+      recipeID: this.props.navigation.state.params.recipeID, 
+      todos: this.props.navigation.state.params.recipe.todos,
+      editMode: false 
     };
   }
 
-  onReview = correct => {
-    if (correct) {
-      this.setState({ numCorrect: this.state.numCorrect + 1 });
+  
+  _activateEidtMode = () => {
+    if( this.state.editMode ) {
+      this.setState({ editMode: false });
+    } else {
+      this.setState({ editMode: true });
     }
-    this.setState({ numReviewed: this.state.numReviewed + 1 });
-  };
-
-  _nextReview = () => {
-    console.warn("Showing next review, but data saving not implemented.");
-    this.setState({ currentReview: this.state.currentReview + 1 });
-  };
-
+  }
+  
   _quitReviewing = () => {
-    console.warn("Data saving not implemented");
+    this.props.stopReview();
     this.props.navigation.goBack();
   };
 
-  _contents() {
-    if (!this.state.reviews || this.state.reviews.length === 0) {
-      return null;
-    }
+  _recipe = () => {
+    return this.props.navigation.state.params.recipe;
+  };
 
-    if (this.state.currentReview < this.state.reviews.length) {
-      return (
-        <ViewCard
-          onReview={this.onReview}
-          continue={this._nextReview}
-          quit={this._quitReviewing}
-          {...this.state.reviews[this.state.currentReview]}
-        />
-      );
-    } else {
-      let percent = this.state.numCorrect / this.state.numReviewed;
-      return mkReviewSummary(percent, this._quitReviewing);
-    }
+  _refresh = () => {
+    this.setState({todos: this.props.navigation.state.params.recipe.todos});
   }
+
+  _addToDos = (recipeID) => {
+    this.props.navigation.navigate("ToDoCreation", {recipe: this._recipe(), recipeID: recipeID, refresh: this._refresh});
+  };
+
 
   render() {
+    const { editMode, recipeID } = this.state;
     return (
       <View style={styles.container}>
-        {this._contents()}
+        <View style={styles.topView}>
+          <Text style={styles.title}>{this.props.navigation.state.params.recipe.name}</Text>
+          <TouchableOpacity>
+            <AntDesign name='edit' size={28} onPress={this._activateEidtMode}/>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.card}>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.toDos}>
+            {Object.values(this.state.todos).map((todo) => {
+              return ( 
+                <ToDo 
+                  key={todo.id}
+                  id={todo.id}
+                  contents={todo.contents}
+                  quit={this._quitReviewing}
+                  editMode={editMode}
+                  {...todo} 
+                />
+              )}
+            )}
+            {editMode ? (
+              <View>
+                <Button style={styles.editButton} onPress={() => this._addToDos(recipeID)}>
+                  <AntDesign name='pluscircleo' size={28} color='#FFC300'/>
+                </Button>
+              </View>
+            ) : (
+              <View></View>
+            )}
+          </ScrollView>
+        </View>
       </View>
-    );
-  }
+    ); 
+  } 
 }
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: colors.blue, flex: 1, paddingTop: 24 }
+  container: {
+    flex: 1,
+    backgroundColor: '#F0F0F0',
+    alignItems: 'center'
+  },
+  topView: {
+    flexDirection: 'row',
+    justifyContent: "center",
+    alignItems: 'center'
+  },
+  title: {
+    color: '#000',
+    fontSize: 30,
+    marginTop: 50,
+    marginBottom: 30,
+    fontWeight: '200'
+  },
+  card: {
+    backgroundColor: 'white',
+    flex: 1,
+    width: width - 25, // 화면의 전체 width 크기 - 25
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    //elevation: 5  // 안드로이드 환경에서 쉐도우 생성
+    // 플랫폼에 따른 css 선택 구문
+    ...Platform.select({
+      ios: {
+        shadowColor: "rgb(50, 50, 50",
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
+        shadowOffset: {
+          heigth: -1,
+          width: 0
+        }
+      },
+      android: {
+        elevation: 3
+      }
+    })
+  },
+  toDos: {
+    alignItems: 'center'
+  },
+  editButton: {
+    backgroundColor: "#fff",
+    width: width - 45,
+    borderRadius: 10,
+    borderStyle: 'dashed',
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+  }
 });
 
-export default ReviewScreen;
+const mapDispatchToProps = dispatch => {
+  return {
+    stopReview: () => {
+      dispatch(stopReview());
+    }
+  };
+};
+
+const mapStateToProps = state => {
+  return {
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ReviewScreen);

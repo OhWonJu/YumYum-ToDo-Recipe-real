@@ -4,7 +4,7 @@ import { StyleSheet, View } from "react-native";
 import Button from "./../Button";
 import NormalText from "./../NormalText";
 import HeadingText from "./../HeadingText";
-import colors from "./../../Styles/colors";
+import colors from "../../Styles/colors";
 
 class ContinueButton extends Component {
   render() {

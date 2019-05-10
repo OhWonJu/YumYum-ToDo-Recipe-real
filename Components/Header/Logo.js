@@ -7,7 +7,7 @@ class Logo extends Component {
   static displayName = "Logo";
 
   render() {
-    return <Image source={require("../../Styles/image/icon.png")} style={styles.logo} />;
+    return <Image source={require("../../Styles/image/dish.png")} style={styles.logo} />;
   }
 }
 

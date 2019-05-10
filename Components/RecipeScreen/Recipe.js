@@ -1,33 +1,30 @@
 import React, { Component } from "react";
 import { StyleSheet, View } from "react-native";
 
-import DeckModel from "./../../Datas/Deck";
+import RecipeModel from "../../Datas/Recipe";
 import Button from "./../Button";
 import NormalText from "./../NormalText";
-import colors from "./../../Styles/colors";
+import colors from "../../Styles/colors";
 
-class Deck extends Component {
-  static displayName = "Deck";
+class Recipe extends Component {
+  static displayName = "Recipe";
 
   _review = () => {
     this.props.review();
   };
 
-  _addCards = () => {
+  /*
+  _addToDos = () => {
     this.props.add();
-  };
+  }; */
 
   render() {
     return (
-      <View style={styles.deckGroup}>
-        <Button style={styles.deckButton} onPress={this._review}>
+      <View style={styles.recipeGroup}>
+        <Button style={styles.recipeButton} onPress={this._review}>
           <NormalText>
-            {this.props.deck.name}: {this.props.count} cards
+            {this.props.recipe.name}
           </NormalText>
-        </Button>
-
-        <Button style={styles.editButton} onPress={this._addCards}>
-          <NormalText>+</NormalText>
         </Button>
       </View>
     );
@@ -35,13 +32,13 @@ class Deck extends Component {
 }
 
 const styles = StyleSheet.create({
-  deckGroup: {
+  recipeGroup: {
     flexDirection: "row",
     alignItems: "stretch",
     padding: 10,
     marginBottom: 5
   },
-  deckButton: { backgroundColor: colors.pink, padding: 10, margin: 0, flex: 1 },
+  recipeButton: { backgroundColor: colors.pink, padding: 10, margin: 0, flex: 1 },
   editButton: {
     width: 60,
     backgroundColor: colors.pink2,
@@ -56,4 +53,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Deck;
+export default Recipe;

@@ -11,7 +11,7 @@ class Input extends Component {
   }
 
   _create = () => {
-    this.props.onEntry(this.state.text);
+    this.props.onEntry(this.state.text); // onEntry라는 이름으로 넘겨진 펑션에 this.state.text의 데이터를 인자로 넘긴다
     this.setState({ text: "" });
   };
 
@@ -22,9 +22,9 @@ class Input extends Component {
     }
   };
 
-  _onChange = text => {
-    this.setState({ text: text });
-    if (this.props.onChange) {
+  _onChange = text => { // 텍스트를 인자로 받고
+    this.setState({ text: text }); // 해당 텍스트를 state
+    if (this.props.onChange) {  // 
       this.props.onChange(text);
     }
   };
@@ -41,7 +41,7 @@ class Input extends Component {
         ref="newDeckInput"
         multiline={false}
         autoCorrect={false}
-        onChangeText={this._onChange}
+        onChangeText={this._onChange} // 텍스트 입력이 변경 될 때마다 호출 되는 콜백에 this._onChange를 넘긴다.
         onSubmitEditing={this._onSubmit}
       />
     );

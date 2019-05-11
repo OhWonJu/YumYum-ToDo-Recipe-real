@@ -87,9 +87,11 @@ class ReviewScreen extends Component {
       <View style={styles.container}>
         <View style={styles.topView}>
           <Text style={styles.title}>{this.props.navigation.state.params.recipe.name}</Text>
-          <TouchableOpacity>
-            <AntDesign name='edit' size={28} onPress={this._activateEidtMode}/>
-          </TouchableOpacity>
+          <View style={styles.actionContainer}>
+            <TouchableOpacity>
+              <AntDesign name='edit' size={28} onPress={this._activateEidtMode}/>
+            </TouchableOpacity>
+          </View>
         </View>
         <View style={styles.card}>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.toDos}>
@@ -138,6 +140,12 @@ const styles = StyleSheet.create({
     marginTop: 50,
     marginBottom: 30,
     fontWeight: '200'
+  },
+  actionContainer: { 
+    // margin을 주는 이유. 사람이 아이콘만 누르기 힘들기 때문에 추가 영역을 주는 것
+    marginVertical: 10,
+    marginHorizontal: 10,
+    paddingTop: 20
   },
   card: {
     backgroundColor: 'white',

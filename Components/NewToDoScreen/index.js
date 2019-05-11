@@ -1,20 +1,22 @@
 // new ToDo를 만드는 화면
-import React, { Component } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { Component } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import RecipeModel from '../../Datas/Recipe';
 import { addToDo, reviewRecipe } from '../../Actions/creators';
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
-import Button from "../Button";
-import LabeledInput from "../LabeledInput";
-import NormalText from "../NormalText";
-import colors from "../../Styles/colors";
+import TimerCreation from './Timer/TimerCreation';
+
+import Button from '../Button';
+import LabeledInput from '../LabeledInput';
+import NormalText from '../NormalText';
+import colors from '../../Styles/colors';
 
 class NewToDo extends Component {
   static navigationOptions = { title: "Create ToDo" };
 
-  static instialState = { contents: "" };
+  static instialState = { contents: "" , isTimer: false, seconds: '0'};
 
   constructor(props) {
     super(props);
@@ -33,13 +35,17 @@ class NewToDo extends Component {
       this.setState({ contents: text });
   }
 
-  _handleTimer = text => {
-      this.setState({ timer: text });
+  _handleSeconds = fromChild => {   // 콜백
+      this.setState({ seconds: fromChild });
+  }
+
+  _handleIsTimer = fromChild => { // 타이머 작동 여부를 콜백하는 함수
+    this.setState({ isTimer: fromChild });
   }
 
   _createToDo = () => {
       //this.props.createToDo(this.state.contents, this.state.timer, this._recipeID());
-      this.props.createToDo(this.state.contents, this._recipeID());
+      this.props.createToDo(this.state.contents, this.state.isTimer, this.state.seconds, this._recipeID());
       this.props.navigation.navigate("ToDoCreation", { recipeID: this._recipeID() });
   }
 
@@ -66,6 +72,13 @@ class NewToDo extends Component {
           clearOnSubmit={true}
           onEntry={this._handelContents}
           onChange={this._handelContents}
+        />
+
+        <TimerCreation 
+          //showTimerField={this.state.isTimer}
+          //seconds={this.state.seconds}
+          isTimerTodo={this._handleIsTimer}
+          setSeconds={this._handleSeconds}
         />
 
         <Button style={styles.createButton} onPress={this._createToDo}>
@@ -100,8 +113,8 @@ const mapDispatchToProps = dispatch => {
     //createToDo: (contents, timer, recipeID) => {
     //    dispatch(addToDo(contents, timer, recipeID));
     //}
-    createToDo: (contents, recipeID) => {
-      dispatch(addToDo(contents, recipeID));
+    createToDo: (contents, isTimer, second, recipeID) => {
+      dispatch(addToDo(contents, isTimer, second, recipeID));
     },
     reviewRecipe: recipeID => {
       dispatch(reviewRecipe(recipeID));

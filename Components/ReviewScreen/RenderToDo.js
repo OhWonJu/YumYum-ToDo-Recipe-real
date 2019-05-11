@@ -1,8 +1,12 @@
 import React, { Component } from "react";
 import { 
-View, Text, 
-TouchableOpacity, StyleSheet,
-Dimensions, TextInput
+View, 
+Text, 
+Image,
+TouchableOpacity, 
+StyleSheet,
+Dimensions, 
+TextInput
 } from "react-native"; 
 
 import PropTypes from "prop-types"; // prop 검증을 위해 import 했다.
@@ -78,6 +82,13 @@ export default class renderToDo extends Component{
                 <Text style={styles.actionText}>✏️</Text>
               </View>
             </TouchableOpacity>
+            <TouchableOpacity >
+              <View style={styles.actionContainer}>
+                <Image 
+                source={require('../../Styles/image/alarm-clock.png')} 
+                style={{width: 18, height: 17, paddingTop: 18}}/>
+              </View>
+            </TouchableOpacity>
             <TouchableOpacity onPressOut={(event) => {event.stopPropagation;}}>
               <View style={styles.actionContainer}>
                 <Text style={styles.actionText}>❌</Text>
@@ -138,7 +149,7 @@ const styles = StyleSheet.create({
   column: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: width / 2,
+    width: width / 2.2,
     //justifyContent: 'space-between'
   },
   circle: {
@@ -171,8 +182,8 @@ const styles = StyleSheet.create({
   },
   actionContainer: { 
     // margin을 주는 이유. 사람이 아이콘만 누르기 힘들기 때문에 추가 영역을 주는 것
-    marginVertical: 10,
-    marginHorizontal: 10
+    marginVertical: 8,
+    marginHorizontal: 8
   },
   input: {
     width: width / 2,
